@@ -112,19 +112,18 @@ export default function AICarpenterChat() {
     }, 400); // Reduced delay for faster interaction
   };
 
-  // FAQ CLICK HANDLER
-  const handleFAQ = (question: string) => {
+  const handleFAQ = (question: keyof typeof faqAnswers) => {
     if (isTyping) return;
-
-    // The FAQs remain visible after a click, as requested by the fix
+  
     setMessages((prev) => [...prev, { text: question, isBot: false }]);
-
+  
     setTimeout(() => {
+      // The error is fixed here because 'question' is now guaranteed to be a valid key
       sendBotReply(
         faqAnswers[question] ||
           "We're still carving that answer. Launching soon — stay tuned."
       );
-    }, 200); // Reduced delay for faster interaction
+    }, 200);
   };
 
   return (
@@ -290,7 +289,7 @@ export default function AICarpenterChat() {
                     {predefinedFAQs.map((faq, i) => (
                       <button
                         key={i}
-                        onClick={() => handleFAQ(faq.q)}
+                        onClick={() => handleFAQ(faq.q as any)}
                         disabled={isTyping}
                         className="w-full text-left p-3 rounded-xl border backdrop-blur-xl transition-all hover:scale-[1.01] flex items-center justify-between" // R: Smaller padding and border-radius
                         style={{
