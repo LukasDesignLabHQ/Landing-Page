@@ -43,6 +43,8 @@ export default function AICarpenterChat() {
   const [isTyping, setIsTyping] = useState(false);
   const [requestCount, setRequestCount] = useState(0);
   const [showFAQs, setShowFAQs] = useState(false);
+  // NEW STATE: Tracks if the input is focused (i.e., keyboard is likely open)
+  const [isInputFocused, setIsInputFocused] = useState(false);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -94,6 +96,7 @@ export default function AICarpenterChat() {
 
     // Hide FAQs on a new user message
     setShowFAQs(false);
+    setIsInputFocused(false); // Hide keyboard after sending
 
     setMessages((prev) => [...prev, { text: input, isBot: false }]);
     setInput("");
@@ -112,13 +115,14 @@ export default function AICarpenterChat() {
     }, 400); // Reduced delay for faster interaction
   };
 
+  // Type-safe FAQ click handler
   const handleFAQ = (question: keyof typeof faqAnswers) => {
     if (isTyping) return;
-  
+
     setMessages((prev) => [...prev, { text: question, isBot: false }]);
-  
+
     setTimeout(() => {
-      // The error is fixed here because 'question' is now guaranteed to be a valid key
+      // TypeScript error resolved here by using keyof typeof faqAnswers
       sendBotReply(
         faqAnswers[question] ||
           "We're still carving that answer. Launching soon — stay tuned."
@@ -144,7 +148,7 @@ export default function AICarpenterChat() {
       {/* FLOATING BUTTON (Position adjusted for better mobile fit) */}
       <motion.button
         onClick={() => setIsOpen(!isOpen)}
-        // R: changed right-4 to right-2 for mobile, and p-5 to p-4 for smaller button
+        // Adjusted positioning for better mobile fit
         className="fixed bottom-4 right-2 sm:bottom-8 sm:right-4 z-50 p-4 sm:p-5 rounded-full shadow-2xl border"
         style={{
           background: `linear-gradient(135deg, ${bronze}, #d4ad7b)`,
@@ -164,12 +168,17 @@ export default function AICarpenterChat() {
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            initial={{ opacity: 0, y: 100, scale: 0.9 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 100, scale: 0.9 }}
-            className="fixed z-50 rounded-3xl shadow-3xl overflow-hidden border flex flex-col transition-all ease-in-out duration-300
-                       bottom-20 left-2 right-2 w-[95vw] h-[80vh] min-h-[400px] max-h-[700px]
-                       sm:bottom-28 sm:right-4 sm:left-auto sm:w-96 sm:h-[600px] sm:max-w-md"
+            // Fix: Removed scale from initial/exit to avoid scaling artifacts,
+            // relying on y-translate for the motion.
+            initial={{ opacity: 0, y: 100 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 100 }}
+            // KEY FIX FOR INPUT FOCUS/SCALING: Use ternary to remove bottom offset
+            // when input is focused, which helps the browser manage the keyboard
+            className={`fixed z-50 rounded-3xl shadow-3xl overflow-hidden border flex flex-col transition-all ease-in-out duration-300 max-h-[100vh]
+                       ${isInputFocused ? "bottom-0" : "bottom-20"} 
+                       left-2 right-2 w-[95vw] h-[80vh] min-h-[400px] max-h-[700px]
+                       sm:bottom-28 sm:right-4 sm:left-auto sm:w-96 sm:h-[600px] sm:max-w-md`}
             style={{
               background: isDark ? "rgba(0,0,0,0.9)" : "rgba(255,255,255,0.95)",
               backdropFilter: "blur(20px)",
@@ -199,17 +208,17 @@ export default function AICarpenterChat() {
               </div>
             </div>
 
-            {/* MESSAGES (Scrollable Area) - Reduced padding for more space */}
+            {/* MESSAGES (Scrollable Area) */}
             <div className="flex-1 pt-4 px-4 overflow-y-auto">
               {messages.length === 0 && (
                 <div className="text-center mt-20">
                   <Sparkles
-                    size={40} // R: Slightly smaller icon for mobile
+                    size={40}
                     style={{ color: bronze }}
                     className="mx-auto mb-3 opacity-50"
                   />
                   <p
-                    className="text-base" // R: Slightly smaller text for mobile
+                    className="text-base"
                     style={{ color: isDark ? "#ccc" : "#444" }}
                   >
                     Ask me anything about Clonekraft...
@@ -222,11 +231,10 @@ export default function AICarpenterChat() {
                   key={i}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className={`mb-3 ${msg.isBot ? "text-left" : "text-right"}`} // R: Reduced margin-bottom
+                  className={`mb-3 ${msg.isBot ? "text-left" : "text-right"}`}
                 >
                   <div
                     className={`inline-block max-w-[80%] px-4 py-2 rounded-xl ${
-                      // R: Increased max-w and reduced padding/border-radius
                       msg.isBot
                         ? isDark
                           ? "bg-white/10"
@@ -275,11 +283,11 @@ export default function AICarpenterChat() {
                 </div>
               )}
 
-              {/* FAQ SECTION (Maintained, adjusted padding) */}
+              {/* FAQ SECTION */}
               {showFAQs && (
                 <div className="mt-3 mb-3">
                   <p
-                    className="text-xs mb-2 opacity-70" // R: Smaller text for hint
+                    className="text-xs mb-2 opacity-70"
                     style={{ color: isDark ? "#ddd" : "#333" }}
                   >
                     Quick questions:
@@ -289,9 +297,12 @@ export default function AICarpenterChat() {
                     {predefinedFAQs.map((faq, i) => (
                       <button
                         key={i}
-                        onClick={() => handleFAQ(faq.q as any)}
+                        // FIX: Pass the type-safe key to handleFAQ
+                        onClick={() =>
+                          handleFAQ(faq.q as keyof typeof faqAnswers)
+                        }
                         disabled={isTyping}
-                        className="w-full text-left p-3 rounded-xl border backdrop-blur-xl transition-all hover:scale-[1.01] flex items-center justify-between" // R: Smaller padding and border-radius
+                        className="w-full text-left p-3 rounded-xl border backdrop-blur-xl transition-all hover:scale-[1.01] flex items-center justify-between"
                         style={{
                           background: isDark
                             ? "rgba(255,255,255,0.05)"
@@ -301,18 +312,15 @@ export default function AICarpenterChat() {
                       >
                         <div className="flex items-center gap-3">
                           <faq.icon size={16} style={{ color: bronze }} />{" "}
-                          {/* R: Smaller icon */}
                           <span
                             className="text-sm"
                             style={{ color: isDark ? "#ddd" : "#333" }}
                           >
-                            {" "}
-                            {/* R: Smaller text */}
                             {faq.q}
                           </span>
                         </div>
                         <ChevronRight
-                          size={16} // R: Smaller icon
+                          size={16}
                           className="transition-transform"
                           style={{ color: bronze }}
                         />
@@ -325,21 +333,21 @@ export default function AICarpenterChat() {
               <div className="pb-2" ref={messagesEndRef} />
             </div>
 
-            {/* INPUT BOX (Reduced padding) */}
+            {/* INPUT BOX */}
             <div
-              className="p-4 border-t flex-shrink-0" // R: Reduced padding
+              className="p-4 border-t flex-shrink-0"
               style={{ borderColor: bronze + "30" }}
             >
               <div className="flex gap-2">
-                {" "}
-                {/* R: Reduced gap */}
                 <input
                   type="text"
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && handleSend()}
+                  onFocus={() => setIsInputFocused(true)} // Set focus state on tap
+                  onBlur={() => setIsInputFocused(false)} // Clear focus state when leaving
                   placeholder="Ask the carpenter..."
-                  className="flex-1 px-4 py-3 rounded-xl border outline-none text-sm" // R: Reduced padding/size/text
+                  className="flex-1 px-4 py-3 rounded-xl border outline-none text-sm"
                   disabled={isTyping}
                   style={{
                     background: isDark
@@ -351,12 +359,11 @@ export default function AICarpenterChat() {
                 />
                 <button
                   onClick={handleSend}
-                  className="p-3 rounded-xl" // R: Reduced padding/size
+                  className="p-3 rounded-xl"
                   style={{ background: bronze }}
                   disabled={isTyping || !input.trim()}
                 >
-                  <Send size={18} className="text-black" />{" "}
-                  {/* R: Smaller icon */}
+                  <Send size={18} className="text-black" />
                 </button>
               </div>
             </div>
