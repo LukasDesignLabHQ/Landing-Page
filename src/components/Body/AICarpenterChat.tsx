@@ -230,7 +230,7 @@ export default function AICarpenterChat() {
                       msg.isBot
                         ? isDark
                           ? "bg-white/10"
-                          : "bg-black/5"
+                          : "bg-black/5 text-black"
                         : "text-black"
                     }`}
                     style={
