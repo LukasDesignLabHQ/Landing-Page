@@ -57,7 +57,7 @@ export default function Navbar() {
         <WaitlistModal isOpen={comingSoon} setIsOpen={setComingSoon} />
       )}
 
-      <div className="fixed inset-0 overflow-hidden pointer-events-none z-10">
+      <div className="fixed inset-0 overflow-hidden pointer-events-none">
         {[...Array(45)].map((_, i) => (
           <motion.div
             key={i}
