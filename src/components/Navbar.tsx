@@ -1,10 +1,10 @@
-// src/components/Navbar.tsx — UPDATED WITH COMING SOON + NEW MENU LABELS
 import { useState } from "react";
 import { Menu, X, Sparkles, Sun, Moon } from "lucide-react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { useTheme } from "../contexts/ThemeContext";
 import { useNavigate } from "react-router-dom";
 import yare from "../../src/assets/vite.png";
+import WaitlistModal from "../WaitlistForm";
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -21,7 +21,6 @@ export default function Navbar() {
   const bronze = "#C1A170";
   const bronzeGlow = "#d4ad7b";
 
-  // Smooth scroll logic
   const smoothScroll = (id: string) => {
     setIsOpen(false);
 
@@ -42,13 +41,11 @@ export default function Navbar() {
     }
   };
 
-  // Navigate to policy page
   const goToPolicy = () => {
     setIsOpen(false);
     navigate("/policy");
   };
 
-  // COMING SOON MODAL
   const openComingSoonModal = () => {
     setIsOpen(false);
     setComingSoon(true);
@@ -56,52 +53,10 @@ export default function Navbar() {
 
   return (
     <>
-      {/* COMING SOON POPUP */}
       {comingSoon && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4"
-          onClick={() => setComingSoon(false)}
-        >
-          <motion.div
-            initial={{ scale: 0.9, y: 20 }}
-            animate={{ scale: 1, y: 0 }}
-            exit={{ scale: 0.9, y: 20 }}
-            onClick={(e) => e.stopPropagation()}
-            className="bg-white rounded-2xl shadow-2xl max-w-lg w-full p-8 relative"
-          >
-            <button
-              onClick={() => setComingSoon(false)}
-              className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition"
-            >
-              <X size={28} />
-            </button>
-
-            <h3 className="text-3xl font-bold text-gray-900 mb-4">
-              Coming Soon!
-            </h3>
-            <p className="text-lg text-gray-700 leading-relaxed">
-              Clonekraft is launching soon. You’ll be able to upload your
-              designs and order instantly once our app goes live.
-            </p>
-
-            <div className="mt-8 flex justify-end">
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={() => setComingSoon(false)}
-                className="px-6 py-3 bg-black text-white rounded-full font-medium"
-              >
-                Got it
-              </motion.button>
-            </div>
-          </motion.div>
-        </motion.div>
+        <WaitlistModal isOpen={comingSoon} setIsOpen={setComingSoon} />
       )}
 
-      {/* Floating particles */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none z-10">
         {[...Array(45)].map((_, i) => (
           <motion.div
@@ -126,7 +81,6 @@ export default function Navbar() {
         ))}
       </div>
 
-      {/* NAVBAR */}
       <motion.nav
         className="fixed top-0 left-0 right-0 z-50 border-b"
         style={{

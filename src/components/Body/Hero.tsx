@@ -1,15 +1,17 @@
-// src/components/Hero.tsx
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { Sparkles } from "lucide-react";
 import { useTheme } from "../../contexts/ThemeContext";
 import furnitureImg from "../../../src/assets/brown.jpg";
+import WaitlistModal from "../../WaitlistForm";
 
 export default function Hero() {
   const { theme } = useTheme();
   const isDark = theme === "dark";
   const bronze = "#C1A170";
 
-  // Updated 3-step process
+  const [isWaitlistOpen, setIsWaitlistOpen] = useState(false);
+
   const steps = [
     {
       number: "01",
@@ -71,7 +73,6 @@ export default function Hero() {
               transition={{ duration: 1, ease: "easeOut" }}
               className="space-y-12"
             >
-              {/* New Headline */}
               <motion.h1
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -86,7 +87,6 @@ export default function Hero() {
                 <span style={{ color: bronze }}>We build it.</span>
               </motion.h1>
 
-              {/* Subtext */}
               <motion.p
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -99,7 +99,7 @@ export default function Hero() {
                 Delivered with trust and precision.
               </motion.p>
 
-              {/* Coming Soon Button */}
+              {/* COMING SOON → Opens Waitlist Modal */}
               <motion.div
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -109,7 +109,8 @@ export default function Hero() {
                 <motion.button
                   whileHover={{ scale: 1.04 }}
                   whileTap={{ scale: 0.98 }}
-                  className="group relative px-12 py-5 rounded-full font-medium text-lg tracking-wider overflow-hidden shadow-2xl"
+                  onClick={() => setIsWaitlistOpen(true)} // ← This opens the modal!
+                  className="group relative px-12 py-5 rounded-full font-medium text-lg tracking-wider overflow-hidden shadow-2xl cursor-pointer"
                   style={{
                     background: isDark
                       ? "rgba(255,255,255,0.08)"
@@ -123,7 +124,7 @@ export default function Hero() {
                 >
                   <span className="relative z-10 flex items-center gap-3">
                     <Sparkles className="w-5 h-5" style={{ color: bronze }} />
-                    COMING SOON
+                    JOIN THE WAITLIST
                   </span>
                   <motion.div
                     className="absolute inset-0 opacity-0 group-hover:opacity-20"
@@ -135,14 +136,13 @@ export default function Hero() {
               </motion.div>
             </motion.div>
 
-            {/* RIGHT — Image + Floating 3-Step Cards */}
+            {/* RIGHT — Image + Floating Cards */}
             <motion.div
               initial={{ opacity: 0, y: 60 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 1.2, ease: "easeOut" }}
               className="relative"
             >
-              {/* Main Image */}
               <motion.div
                 whileHover={{ scale: 1.02 }}
                 className="relative rounded-3xl overflow-hidden shadow-2xl"
@@ -160,7 +160,6 @@ export default function Hero() {
                 <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
               </motion.div>
 
-              {/* Floating Step Cards */}
               {steps.map((step, i) => (
                 <motion.div
                   key={i}
@@ -196,14 +195,13 @@ export default function Hero() {
                     <div>
                       <p
                         className="text-2xl font-bold"
-                        style={{ color: isDark ? "#000" : "#000" }}
+                        style={{ color: isDark ? "#fff" : "#000" }}
                       >
                         {step.title}
                       </p>
                       <p
                         className="text-lg font-medium opacity-80"
-                
-                        style={{ color: isDark ? "#000" : bronze}}
+                        style={{ color: bronze }}
                       >
                         {step.subtitle}
                       </p>
@@ -211,7 +209,7 @@ export default function Hero() {
                   </div>
                   <p
                     className="text-sm opacity-70 mt-2"
-                    style={{ color: isDark ? "#000" : "#444" }}
+                    style={{ color: isDark ? "#ddd" : "#444" }}
                   >
                     {step.desc}
                   </p>
@@ -221,6 +219,7 @@ export default function Hero() {
           </div>
         </div>
       </section>
+      <WaitlistModal isOpen={isWaitlistOpen} setIsOpen={setIsWaitlistOpen} />
     </>
   );
 }

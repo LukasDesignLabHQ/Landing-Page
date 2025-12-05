@@ -1,11 +1,12 @@
 // src/components/Contact.tsx
 import { motion } from "framer-motion";
-import { Mail, ArrowRight, X } from "lucide-react";
+import { Mail, ArrowRight } from "lucide-react";
 import { useState } from "react";
+import WaitlistModal from "../../WaitlistForm";
 
 const Contact = () => {
   const bronze = "#C1A170";
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isWaitlistOpen, setIsWaitlistOpen] = useState(false); // ← Control modal
 
   return (
     <>
@@ -43,12 +44,12 @@ const Contact = () => {
               info@clonekraft.com
             </motion.a>
 
-            {/* Start Cloning Button → opens modal */}
+            {/* "Start Cloning" → Opens the beautiful Waitlist Modal */}
             <motion.button
-              onClick={() => setIsModalOpen(true)}
+              onClick={() => setIsWaitlistOpen(true)}
               whileHover={{ scale: 1.06 }}
               whileTap={{ scale: 0.98 }}
-              className="group inline-flex items-center gap-4 px-8 py-4 bg-black text-white rounded-full text-lg font-medium tracking-wide shadow-2xl"
+              className="group inline-flex items-center gap-4 px-8 py-4 bg-black text-white rounded-full text-lg font-medium tracking-wide shadow-2xl transition-all hover:shadow-3xl"
             >
               Start Cloning
               <ArrowRight className="w-5 h-5 group-hover:translate-x-2 transition-transform" />
@@ -66,50 +67,7 @@ const Contact = () => {
         </div>
       </section>
 
-      {/* Coming Soon Modal */}
-      {isModalOpen && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4"
-          onClick={() => setIsModalOpen(false)}
-        >
-          <motion.div
-            initial={{ scale: 0.9, y: 20 }}
-            animate={{ scale: 1, y: 0 }}
-            exit={{ scale: 0.9, y: 20 }}
-            onClick={(e) => e.stopPropagation()}
-            className="bg-white rounded-2xl shadow-2xl max-w-lg w-full p-8 relative"
-          >
-            <button
-              onClick={() => setIsModalOpen(false)}
-              className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition"
-            >
-              <X size={28} />
-            </button>
-
-            <h3 className="text-3xl font-bold text-gray-900 mb-4">
-              Coming Soon!
-            </h3>
-            <p className="text-lg text-gray-700 leading-relaxed">
-              Clonekraft is launching soon. You’ll be able to upload your
-              designs and order instantly once our app goes live.
-            </p>
-
-            <div className="mt-8 flex justify-end">
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={() => setIsModalOpen(false)}
-                className="px-6 py-3 bg-black text-white rounded-full font-medium"
-              >
-                Got it
-              </motion.button>
-            </div>
-          </motion.div>
-        </motion.div>
-      )}
+      <WaitlistModal isOpen={isWaitlistOpen} setIsOpen={setIsWaitlistOpen} />
     </>
   );
 };
