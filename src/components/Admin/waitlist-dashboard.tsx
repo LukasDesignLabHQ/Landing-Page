@@ -1,4 +1,3 @@
-// WaitlistDashboard.tsx (Responsive + polished checkboxes)
 import { useState, useEffect } from "react";
 import { supabase } from "../../supabase/supabaseClient";
 import { useTheme } from "../../contexts/ThemeContext";
@@ -36,6 +35,8 @@ export default function WaitlistDashboard() {
   const [copied, setCopied] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedUsers, setSelectedUsers] = useState<Set<string>>(new Set());
+  // NEW STATE: Controls whether individual user checkboxes are visible
+  const [showCheckboxes, setShowCheckboxes] = useState(false);
   const [adminModalOpen, setAdminModalOpen] = useState(true);
   const [adminEmail, setAdminEmail] = useState("");
   const [adminPassword, setAdminPassword] = useState("");
@@ -54,6 +55,13 @@ export default function WaitlistDashboard() {
   useEffect(() => {
     if (adminAuthenticated) fetchEverything();
   }, [adminAuthenticated]);
+
+  // EFFECT to update showCheckboxes state
+  useEffect(() => {
+    // If any user is selected, or if the "Send Mail" button is showing (meaning selections exist)
+    // we should show the checkboxes. Otherwise, hide them.
+    setShowCheckboxes(selectedUsers.size > 0);
+  }, [selectedUsers]);
 
   async function fetchEverything() {
     setLoading(true);
@@ -84,8 +92,6 @@ export default function WaitlistDashboard() {
     currentPage * pageSize
   );
 
-  // ... copyEmails, exportCSV, toggle functions remain unchanged ...
-
   const copyEmails = () => {
     const emails = filtered.map((s) => s.email).join(", ");
     navigator.clipboard.writeText(emails);
@@ -113,9 +119,15 @@ export default function WaitlistDashboard() {
 
   const toggleSelectAll = () => {
     if (selectedUsers.size === paginated.length && paginated.length > 0) {
+      // Deselect all
       setSelectedUsers(new Set());
+      // Optional: hide checkboxes if nothing is selected
+      setShowCheckboxes(false);
     } else {
+      // Select all
       setSelectedUsers(new Set(paginated.map((s) => s.id)));
+      // Show checkboxes
+      setShowCheckboxes(true);
     }
   };
 
@@ -123,6 +135,13 @@ export default function WaitlistDashboard() {
     const newSet = new Set(selectedUsers);
     newSet.has(id) ? newSet.delete(id) : newSet.add(id);
     setSelectedUsers(newSet);
+
+    // Automatically show checkboxes when a user is selected
+    if (newSet.size > 0) {
+      setShowCheckboxes(true);
+    } else {
+      setShowCheckboxes(false);
+    }
   };
 
   const sendMailToSelected = () => {
@@ -183,7 +202,7 @@ export default function WaitlistDashboard() {
         />
         <meta name="robots" content="noindex, nofollow" />
       </Helmet>
-      {/* Admin Modal - unchanged except small mobile tweaks */}
+      {/* Admin Modal - unchanged */}
       {adminModalOpen && !adminAuthenticated && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div
@@ -330,7 +349,7 @@ export default function WaitlistDashboard() {
             )}
           </div>
 
-          {/* Responsive Table Container */}
+          {/* Responsive List Container (Replaces Table) */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -353,78 +372,95 @@ export default function WaitlistDashboard() {
                 </p>
               </div>
             ) : (
-              <div className="overflow-x-auto scrollbar-thin scrollbar-thumb-rounded scrollbar-thumb-gray-500">
-                <table className="w-full min-w-[640px]">
-                  <thead
-                    style={{ backgroundColor: isDark ? "#111" : "#f9f9f9" }}
-                  >
-                    <tr>
-                      <th className="px-4 py-5 text-left">
+              // --- START: MOBILE LIST VIEW (NO TABLES) ---
+              <div className="p-4 sm:p-6">
+                {/* Select All Checkbox for the current page */}
+                <div
+                  className="flex items-center gap-4 py-3 mb-4 rounded-lg px-4 cursor-pointer"
+                  style={{ backgroundColor: isDark ? "#111" : "#f9f9f9" }}
+                  onClick={toggleSelectAll} // Make the whole bar clickable
+                >
+                  <input
+                    type="checkbox"
+                    checked={
+                      selectedUsers.size === paginated.length &&
+                      paginated.length > 0
+                    }
+                    onChange={toggleSelectAll}
+                    className="w-5 h-5 rounded-md border-2 cursor-pointer accent-black dark:accent-white"
+                    style={{ borderColor: textMuted }}
+                  />
+                  <span className="font-bold">
+                    {selectedUsers.size > 0
+                      ? `Deselect All (${selectedUsers.size})`
+                      : `Select Page (${paginated.length})`}
+                  </span>
+                </div>
+
+                <ul className="space-y-4">
+                  {paginated.map((s, i) => (
+                    <motion.li
+                      key={s.id}
+                      initial={{ opacity: 0, x: -10 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: i * 0.05 }}
+                      // Add padding-left conditional on showCheckboxes
+                      className={`p-4 rounded-xl border flex items-start gap-4 shadow-sm transition-all duration-300 ${
+                        showCheckboxes ? "pl-2" : "pl-4"
+                      }`}
+                      style={{
+                        borderColor: border,
+                        backgroundColor: isDark ? "#080808" : "#fbfbfb",
+                      }}
+                    >
+                      {/* Checkbox - Conditionally rendered based on showCheckboxes state */}
+                      <div
+                        className={`pt-1 transition-opacity duration-300 ${
+                          showCheckboxes
+                            ? "opacity-100 w-5"
+                            : "opacity-0 w-0 pointer-events-none"
+                        }`}
+                      >
                         <input
                           type="checkbox"
-                          checked={
-                            selectedUsers.size === paginated.length &&
-                            paginated.length > 0
-                          }
-                          onChange={toggleSelectAll}
+                          checked={selectedUsers.has(s.id)}
+                          onChange={() => toggleUser(s.id)}
                           className="w-5 h-5 rounded-md border-2 cursor-pointer accent-black dark:accent-white"
                           style={{ borderColor: textMuted }}
                         />
-                      </th>
-                      <th className="px-6 py-5 text-left font-bold">Name</th>
-                      <th className="px-6 py-5 text-left font-bold">Email</th>
-                      <th className="px-6 py-5 text-right font-bold">Joined</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {paginated.map((s, i) => (
-                      <motion.tr
-                        key={s.id}
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        transition={{ delay: i * 0.02 }}
-                        className="border-t"
-                        style={{ borderColor: border }}
-                      >
-                        <td className="px-4 py-5">
-                          <input
-                            type="checkbox"
-                            checked={selectedUsers.has(s.id)}
-                            onChange={() => toggleUser(s.id)}
-                            className="w-5 h-5 rounded-md border-2 cursor-pointer accent-black dark:accent-white"
-                            style={{ borderColor: textMuted }}
-                          />
-                        </td>
-                        <td className="px-6 py-5 font-medium">
+                      </div>
+
+                      {/* Content Card: Name and Email */}
+                      <div className="flex-1 min-w-0">
+                        <p className="text-lg font-bold truncate">
                           {s.name || "—"}
-                        </td>
-                        <td className="px-6 py-5">
-                          <a
-                            href={`mailto:${s.email}`}
-                            className="flex items-center gap-2 hover:underline"
-                            style={{ color: text }}
-                          >
-                            <span className="truncate max-w-[200px] inline-block sm:max-w-none">
-                              {s.email}
-                            </span>
-                            <Mail size={14} />
-                          </a>
-                        </td>
-                        <td
-                          className="px-6 py-5 text-right"
+                        </p>
+                        <a
+                          href={`mailto:${s.email}`}
+                          className="flex items-center gap-1 hover:underline text-sm truncate"
                           style={{ color: textMuted }}
+                          title={s.email}
                         >
+                          <Mail size={14} className="flex-shrink-0" />
+                          <span className="truncate">{s.email}</span>
+                        </a>
+                      </div>
+
+                      {/* Joined Date */}
+                      <div className="text-right flex-shrink-0 text-sm pt-1">
+                        <span className="block font-medium">Joined</span>
+                        <span style={{ color: textMuted }}>
                           {new Date(s.created_at).toLocaleDateString("en-US", {
                             month: "short",
                             day: "numeric",
-                            year: "numeric",
                           })}
-                        </td>
-                      </motion.tr>
-                    ))}
-                  </tbody>
-                </table>
+                        </span>
+                      </div>
+                    </motion.li>
+                  ))}
+                </ul>
               </div>
+              // --- END: MOBILE LIST VIEW (NO TABLES) ---
             )}
 
             {/* Pagination */}
@@ -438,6 +474,7 @@ export default function WaitlistDashboard() {
               </p>
 
               <div className="flex items-center gap-3">
+                {/* Send Mail Button is only visible if users are selected */}
                 {selectedUsers.size > 0 && (
                   <button
                     onClick={sendMailToSelected}
