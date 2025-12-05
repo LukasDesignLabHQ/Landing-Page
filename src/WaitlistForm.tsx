@@ -21,7 +21,7 @@ const bronzeLight = "#D4C19E";
 const bronzeDark = "#A67C52";
 const deepBrown = "#2D1B0F";
 const warmCream = "#FAF9F6";
-const darkBg = "#0F0A05";
+//const darkBg = "#0F0A05";
 const darkCard = "#1A120B";
 
 export default function WaitlistModal({
@@ -96,7 +96,7 @@ export default function WaitlistModal({
   if (!isOpen) return null;
 
   // Dynamic theme colors
-  const bg = isDark ? darkBg : warmCream;
+  // const bg = isDark ? darkBg : warmCream;
   const cardBg = isDark ? darkCard : warmCream;
   const text = isDark ? "#FAF9F6" : deepBrown;
   const textMuted = isDark ? bronzeLight : "#8B6F47";
