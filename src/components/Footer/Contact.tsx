@@ -2,7 +2,7 @@
 import { motion } from "framer-motion";
 import { Mail, ArrowRight } from "lucide-react";
 import { useState } from "react";
-import WaitlistModal from "../../WaitlistForm";
+import WaitlistModal from "../Admin/WaitlistForm";
 
 const Contact = () => {
   const bronze = "#C1A170";

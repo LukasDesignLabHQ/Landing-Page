@@ -10,8 +10,8 @@ import {
   MailCheck,
   Crown,
 } from "lucide-react";
-import { supabase } from "./supabase/supabaseClient";
-import { useTheme } from "./contexts/ThemeContext";
+import { supabase } from "../../supabase/supabaseClient";
+import { useTheme } from "../../contexts/ThemeContext";
 
 type ModalState = "form" | "success" | "already-joined" | "error";
 

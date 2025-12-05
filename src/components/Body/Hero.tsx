@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { Sparkles } from "lucide-react";
 import { useTheme } from "../../contexts/ThemeContext";
 import furnitureImg from "../../../src/assets/brown.jpg";
-import WaitlistModal from "../../WaitlistForm";
+import WaitlistModal from "../Admin/WaitlistForm";
 
 export default function Hero() {
   const { theme } = useTheme();

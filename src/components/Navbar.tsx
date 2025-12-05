@@ -4,7 +4,7 @@ import { motion, useScroll, useTransform } from "framer-motion";
 import { useTheme } from "../contexts/ThemeContext";
 import { useNavigate } from "react-router-dom";
 import yare from "../../src/assets/vite.png";
-import WaitlistModal from "../WaitlistForm";
+import WaitlistModal from "./Admin/WaitlistForm";
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -57,7 +57,7 @@ export default function Navbar() {
         <WaitlistModal isOpen={comingSoon} setIsOpen={setComingSoon} />
       )}
 
-      <div className="fixed inset-0 overflow-hidden pointer-events-none">
+      <div className="fixed inset-0 overflow-hidden pointer-events-none z-10">
         {[...Array(45)].map((_, i) => (
           <motion.div
             key={i}
