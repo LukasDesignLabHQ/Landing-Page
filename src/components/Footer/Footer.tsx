@@ -1,6 +1,6 @@
-// src/components/Footer.tsx — UPDATED WITH SOCIAL HANDLES
+// src/components/Footer.tsx — UPDATED WITH NEW ADDRESS & PHONE
 import { motion } from "framer-motion";
-import { Sparkles, Mail } from "lucide-react";
+import { Sparkles, Mail, Phone, MapPin } from "lucide-react";
 
 const Footer = () => {
   const bronze = "#C1A170";
@@ -41,22 +41,43 @@ const Footer = () => {
             </p>
           </motion.div>
 
-          {/* Contact */}
+          {/* Contact — NOW WITH ADDRESS & PHONE */}
           <motion.div
             variants={item}
             className="flex flex-col items-center md:items-start"
           >
-            <p className="text-gray-500 text-xs uppercase tracking-widest mb-3">
+            <p className="text-gray-500 text-xs uppercase tracking-widest mb-4">
               Get in touch
             </p>
+
             <a
               href="mailto:info@clonekraft.com"
-              className="text-white text-base md:text-lg hover:underline flex items-center gap-3"
+              className="text-white text-base md:text-lg hover:underline flex items-center gap-3 mb-3"
             >
               <Mail size={20} />
               info@clonekraft.com
             </a>
-            <p className="text-gray-500 text-xs mt-4">
+
+            <a
+              href="tel:+2347019758061"
+              className="text-white text-base hover:underline flex items-center gap-3 mb-3"
+            >
+              <Phone size={18} />
+              0701 975 8061
+            </a>
+
+            <div className="flex items-start gap-3 text-gray-300 text-sm leading-relaxed max-w-xs">
+              <MapPin size={18} className="mt-0.5 flex-shrink-0" />
+              <p>
+                Web No. 9 Inner Northern Road,
+                <br />
+                Behind Chicken Republic,
+                <br />
+                Dei-Dei, Abuja, Nigeria
+              </p>
+            </div>
+
+            <p className="text-gray-500 text-xs mt-6">
               Replies within hours · Always human
             </p>
           </motion.div>
@@ -73,6 +94,7 @@ const Footer = () => {
             <a
               href="https://instagram.com/Clonekraft"
               target="_blank"
+              rel="noopener noreferrer"
               className="text-white text-sm hover:underline mb-2"
             >
               @Clonekraft (Instagram)
@@ -81,6 +103,7 @@ const Footer = () => {
             <a
               href="https://www.tiktok.com/@clonkraft"
               target="_blank"
+              rel="noopener noreferrer"
               className="text-white text-sm hover:underline mb-2"
             >
               @clonkraft (TikTok)
@@ -89,6 +112,7 @@ const Footer = () => {
             <a
               href="https://twitter.com/Clonekraft"
               target="_blank"
+              rel="noopener noreferrer"
               className="text-white text-sm hover:underline mb-2"
             >
               @Clonekraft (X/Twitter)
@@ -97,6 +121,7 @@ const Footer = () => {
             <a
               href="#"
               target="_blank"
+              rel="noopener noreferrer"
               className="text-white text-sm hover:underline mb-2"
             >
               Clonekraft (Facebook Page)
@@ -105,6 +130,7 @@ const Footer = () => {
             <a
               href="#"
               target="_blank"
+              rel="noopener noreferrer"
               className="text-white text-sm hover:underline"
             >
               Clonekraft (LinkedIn)
