@@ -9,7 +9,7 @@ const deepBrown = "#2D1B0F";
 const warmCream = "#FAF9F6";
 
 export default function WaitlistPage() {
-  const [isWaitlistOpen, setIsWaitlistOpen] = useState(false);
+  const [isWaitlistOpen, setIsWaitlistOpen] = useState(true);
 
   return (
     <>
