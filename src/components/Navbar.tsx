@@ -49,6 +49,7 @@ export default function Navbar() {
   const openComingSoonModal = () => {
     setIsOpen(false);
     setComingSoon(true);
+    navigate('/waitlist')
   };
 
   return (
@@ -156,7 +157,7 @@ export default function Navbar() {
                   }}
                 >
                   <Sparkles className="w-4 h-4" />
-                  Start Cloning
+                  Join Waitlist
                 </button>
               </div>
             </div>
@@ -227,7 +228,7 @@ export default function Navbar() {
                       background: `linear-gradient(135deg, ${bronze}, ${bronzeGlow})`,
                     }}
                   >
-                    Start Cloning
+                    Join Waitlist
                   </button>
                 </div>
               </div>
