@@ -21,7 +21,6 @@ const bronzeLight = "#D4C19E";
 const bronzeDark = "#A67C52";
 const deepBrown = "#2D1B0F";
 const warmCream = "#FAF9F6";
-
 const darkCard = "#1A120B";
 
 export default function WaitlistModal({
@@ -72,20 +71,31 @@ export default function WaitlistModal({
     }));
   };
 
-  // Reset to form when reopened
+  // Reset modal when reopened
   useEffect(() => {
     if (isOpen) setModalState("form");
   }, [isOpen]);
 
-  // Auto-close feedback screens
+  // Auto-close + redirect to home after feedback
   useEffect(() => {
-    if (modalState !== "form") {
-      const timer = setTimeout(() => setIsOpen(false), 5000);
+    if (modalState !== "form" && isOpen) {
+      const timer = setTimeout(() => {
+        setIsOpen(false);
+
+        // Redirect to home page after modal closes
+        // Option 1: Hard redirect (works everywhere)
+        window.location.href = "/";
+
+        // Option 2: If you're using React Router v6 (uncomment if needed)
+        // const navigate = useNavigate();
+        // navigate("/", { replace: true });
+      }, 5000);
+
       return () => clearTimeout(timer);
     }
-  }, [modalState, setIsOpen]);
+  }, [modalState, isOpen, setIsOpen]);
 
-  // ESC to close
+  // Close on Escape
   useEffect(() => {
     const handler = (e: KeyboardEvent) =>
       e.key === "Escape" && setIsOpen(false);
@@ -95,8 +105,6 @@ export default function WaitlistModal({
 
   if (!isOpen) return null;
 
-  // Dynamic theme colors
-  // const bg = isDark ? darkBg : warmCream;
   const cardBg = isDark ? darkCard : warmCream;
   const text = isDark ? "#FAF9F6" : deepBrown;
   const textMuted = isDark ? bronzeLight : "#8B6F47";
@@ -110,7 +118,7 @@ export default function WaitlistModal({
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="fixed inset-0 bg-black/70 backdrop-blur-xl z-200 flex items-center justify-center p-4"
+        className="fixed inset-0 bg-black/70 backdrop-blur-xl z-50 flex items-center justify-center p-4"
         onClick={() => setIsOpen(false)}
       >
         {/* FORM */}
@@ -124,7 +132,6 @@ export default function WaitlistModal({
             style={{ backgroundColor: cardBg }}
             className="relative rounded-3xl shadow-2xl max-w-md w-full p-10 overflow-hidden"
           >
-            {/* Glow orbs */}
             <div className="absolute -top-32 -right-32 w-80 h-80 rounded-full blur-3xl opacity-30 bg-amber-600" />
             <div className="absolute -bottom-32 -left-32 w-80 h-80 rounded-full blur-3xl opacity-30 bg-amber-700" />
 
@@ -283,13 +290,9 @@ export default function WaitlistModal({
               <br />
               Get ready for something legendary.
             </p>
-            <motion.div
-              animate={{ rotate: [0, 10, -10, 0] }}
-              transition={{ repeat: Infinity, duration: 3 }}
-              className="mt-6"
-            >
-              <Sparkles size={40} className="mx-auto text-bronze" />
-            </motion.div>
+            <p className="text-sm mt-6 opacity-70" style={{ color: textMuted }}>
+              Redirecting you home in 5s...
+            </p>
           </FeedbackCard>
         )}
 
@@ -317,7 +320,9 @@ export default function WaitlistModal({
               <br />
               See you on the inside.
             </p>
-            <Crown size={48} className="mx-auto mt-6 text-bronze" />
+            <p className="text-sm mt-6 opacity-70" style={{ color: textMuted }}>
+              Taking you home in 5s...
+            </p>
           </FeedbackCard>
         )}
 
@@ -357,7 +362,6 @@ export default function WaitlistModal({
   );
 }
 
-// Reusable feedback card for success/already/error states
 function FeedbackCard({
   children,
   onClick,
